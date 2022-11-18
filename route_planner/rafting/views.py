@@ -1,24 +1,28 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Rafting_23
+from .models import Rafting
+
 
 def index(request):
     return render(request, 'rafting/index.html')
 
 
 def routes(request):
-    rafting = Rafting_23.objects.all()
+    rafting = Rafting.objects.all()
     context = {
         'rafting': rafting,
-        'title' : 'Маршруты',
+        'title': 'Маршруты',
     }
     return render(request, 'rafting/routes.html', context)
 
 
-def get_rafting(request, id):
-    rafting = Rafting_23.objects.get(pk=id)
+def show_rafting(request, rafting_slug):
+    rafting = get_object_or_404(Rafting, slug=rafting_slug)
+
     context = {
         'rafting': rafting,
-
+        'title': rafting.title,
+        'content': rafting.content
     }
+
     return render(request, 'rafting/rafting.html', context)

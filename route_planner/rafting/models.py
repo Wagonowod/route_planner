@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Members(models.Model):
@@ -18,7 +19,7 @@ class Members(models.Model):
         ordering = ['name']
 
 
-class Rafting_23(models.Model):
+class Rafting(models.Model):
     title = models.CharField(max_length=50, verbose_name='Название реки')
     days = models.IntegerField(verbose_name='Количество дней')
     content = models.TextField(verbose_name='Описание сплава')
@@ -33,9 +34,13 @@ class Rafting_23(models.Model):
 
     level = models.CharField(max_length=30, choices=LEVEL, verbose_name='Сложность')
     members = models.ManyToManyField(Members, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('rafting', kwargs={'rafting_slug': self.slug})
 
     class Meta:
         verbose_name = 'Сплав'
@@ -61,7 +66,7 @@ class Things(models.Model):
 class Images(models.Model):
     image = models.ImageField(upload_to='images/', blank=True)
     title = models.CharField(max_length=50, verbose_name='Название')
-    rafting = models.ForeignKey(Rafting_23, on_delete=models.CASCADE, verbose_name='id Сплава', related_name='+')
+    rafting = models.ForeignKey(Rafting, on_delete=models.CASCADE, verbose_name='id Сплава', related_name='+')
 
     def __str__(self):
         return self.title

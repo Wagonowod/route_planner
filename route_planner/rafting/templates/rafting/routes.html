@@ -22,7 +22,7 @@
 
             <td>
                 <img src="{{ item.images.url }}" alt="" width="200">
-                <a href="{% url 'detail' item.pk %}">
+                <a href="{{ item.get_absolute_url }}">
                {{ item.title }} </a>
             </td>
             <td>{{ item.days }}</td>
