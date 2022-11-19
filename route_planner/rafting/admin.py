@@ -22,7 +22,7 @@ class ThingsAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'individual', 'common', 'amount')
     list_display_links = ('title',)
     search_fields = ('title', 'individual', 'common')
-    list_editable = ('individual', 'common')
+    list_editable = ('individual', 'common', 'amount')
     list_filter = ('individual', 'common')
 
 

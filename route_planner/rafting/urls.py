@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('routes', views.routes, name='routes'),
     path('rafting/<slug:rafting_slug>', views.show_rafting, name='rafting'),
+    path('things', views.get_things, name='things')
 ]

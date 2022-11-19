@@ -1,10 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Rafting
+from .models import Rafting, Things
 
 
 def index(request):
-    return render(request, 'rafting/index.html')
+    rafting = Rafting.objects.all().prefetch_related('images')
+    context = {
+        'rafting': rafting,
+        'title': 'Планировщик туристических маршрутов',
+    }
+    return render(request, 'rafting/index.html', context)
 
 
 def routes(request):
@@ -26,3 +31,11 @@ def show_rafting(request, rafting_slug):
     }
 
     return render(request, 'rafting/rafting.html', context)
+
+def get_things(request):
+    things = Things.objects.all()
+    context = {
+        'things': things,
+        'title': 'Сбор сплава',
+    }
+    return render(request, 'rafting/things.html', context)
