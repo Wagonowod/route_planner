@@ -10,6 +10,7 @@ class Members(models.Model):
     name = models.CharField(max_length=50, verbose_name='Фамилия, Имя')
     sex = models.CharField(max_length=10, choices=SEX, verbose_name='Пол')
 
+
     def __str__(self):
         return self.name
 
@@ -25,7 +26,8 @@ class Rafting(models.Model):
     content = models.TextField(verbose_name='Описание сплава')
     km_on_river = models.IntegerField(verbose_name='Километров по реке')
     km_from_perm = models.IntegerField(verbose_name='Километров от Перми')
-    images = models.ImageField(upload_to='images/', blank=True)
+    title_image = models.ImageField(upload_to='images/title/', blank=True, verbose_name='Главное фото')
+    preview_image = models.ImageField(upload_to='images/preview/', blank=True, verbose_name='Превью')
     LEVEL = (
         ('Лёгкая', 'Лёгкая'),
         ('Средняя', 'Средняя'),
@@ -33,7 +35,7 @@ class Rafting(models.Model):
     )
 
     level = models.CharField(max_length=30, choices=LEVEL, verbose_name='Сложность')
-    members = models.ManyToManyField(Members, blank=True)
+    members = models.ManyToManyField(Members, blank=True, verbose_name='Участники')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
 
     def __str__(self):
@@ -51,7 +53,6 @@ class Rafting(models.Model):
 class Things(models.Model):
     title = models.CharField(max_length=50, verbose_name='Название вещи')
     individual = models.BooleanField(verbose_name='Индивидуальные')
-    common = models.BooleanField(verbose_name='Общие')
     amount = models.IntegerField(verbose_name='Количество', blank=True)
 
     def __str__(self):
@@ -60,13 +61,13 @@ class Things(models.Model):
     class Meta:
         verbose_name = 'Вещь'
         verbose_name_plural = 'Вещи'
-        ordering = ['common']
+        ordering = ['individual']
 
 
 class Images(models.Model):
-    image = models.ImageField(upload_to='images/', blank=True)
+    image = models.ImageField(upload_to='images/basic', blank=True)
     title = models.CharField(max_length=50, verbose_name='Название')
-    rafting = models.ForeignKey(Rafting, on_delete=models.CASCADE, verbose_name='id Сплава', related_name='+')
+    rafting = models.ForeignKey(Rafting, on_delete=models.CASCADE, verbose_name='id Сплава', related_name='images')
 
     def __str__(self):
         return self.title
@@ -77,6 +78,27 @@ class Images(models.Model):
         ordering = ['rafting_id']
 
 
+class RaftingMembers(models.Model):
+    rafting = models.ForeignKey(Rafting, on_delete=models.PROTECT, blank=True, verbose_name='Сплав')
+    member = models.ManyToManyField(Members, blank=True)
+
+    def __str__(self):
+        return self.rafting
+
+
 class ThingsOfRaftingMembers(models.Model):
-    member = models.ForeignKey(Members, on_delete=models.CASCADE, verbose_name='id Участника')
+    member = models.ForeignKey(RaftingMembers, on_delete=models.CASCADE, verbose_name='id Участника сплава')
     thing = models.ForeignKey(Things, on_delete=models.CASCADE, verbose_name='id Вещи')
+
+class Timings(models.Model):
+    time = models.CharField(max_length=30, verbose_name='Время')
+    action = models.TextField(verbose_name='Действие')
+    rafting = models.ForeignKey(Rafting, on_delete=models.PROTECT, verbose_name='Сплав')
+
+    def __str__(self):
+        return self.action
+
+    class Meta:
+        verbose_name = 'Тайминг'
+        verbose_name_plural = 'Тайминги'
+        ordering = ['time']
