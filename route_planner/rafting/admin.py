@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Rafting, Members, Things, Images, Timings
+from .models import Rafting, Members, Things, Images, Timings, ThingsOnRaftings
 
 
 class RaftingAdmin(admin.ModelAdmin):
@@ -8,6 +8,7 @@ class RaftingAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     list_filter = ('title',)
     prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ['members', ]
 
 
 class MembersAdmin(admin.ModelAdmin):
@@ -32,12 +33,20 @@ class ImagesAdmin(admin.ModelAdmin):
     search_fields = ('title',)
     list_filter = ('title',)
 
+
 class TimingAdmin(admin.ModelAdmin):
-    list_display = ('time', 'action', 'rafting')
+    list_display = ('time', 'action', 'rafting', 'day', 'order')
     list_display_links = ('action',)
-    list_editable = ('time', 'rafting')
+    list_editable = ('time', 'day', 'order')
     search_fields = ('rafting',)
-    list_filter = ('rafting',)
+    list_filter = ('rafting', 'day', 'order')
+    ordering = ('order',)
+
+
+class ThingsOnRaftingsAdmin(admin.ModelAdmin):
+    list_display = ('rafting_id', 'thing_id', 'member_id')
+    list_display_links = ('rafting_id',)
+    list_editable = ('member_id',)
 
 
 admin.site.register(Rafting, RaftingAdmin)
@@ -45,3 +54,4 @@ admin.site.register(Members, MembersAdmin)
 admin.site.register(Things, ThingsAdmin)
 admin.site.register(Images, ImagesAdmin)
 admin.site.register(Timings, TimingAdmin)
+admin.site.register(ThingsOnRaftings, ThingsOnRaftingsAdmin)

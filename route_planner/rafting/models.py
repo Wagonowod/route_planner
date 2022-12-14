@@ -2,30 +2,13 @@ from django.db import models
 from django.urls import reverse
 
 
-class Members(models.Model):
-    SEX = (
-        ('М', 'Муж'),
-        ('Ж', 'Жен'),
-    )
-    name = models.CharField(max_length=50, verbose_name='Фамилия, Имя')
-    sex = models.CharField(max_length=10, choices=SEX, verbose_name='Пол')
-
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Участник'
-        verbose_name_plural = 'Участники'
-        ordering = ['name']
-
-
 class Rafting(models.Model):
     title = models.CharField(max_length=50, verbose_name='Название реки')
     days = models.IntegerField(verbose_name='Количество дней')
     content = models.TextField(verbose_name='Описание сплава')
+    short_content = models.TextField(verbose_name='Краткое описание сплава', null=True)
     km_on_river = models.IntegerField(verbose_name='Километров по реке')
-    km_from_perm = models.IntegerField(verbose_name='Километров от Перми')
+    km_from_perm = models.CharField(max_length=50, verbose_name='Километров от Перми')
     title_image = models.ImageField(upload_to='images/title/', blank=True, verbose_name='Главное фото')
     preview_image = models.ImageField(upload_to='images/preview/', blank=True, verbose_name='Превью')
     LEVEL = (
@@ -35,8 +18,8 @@ class Rafting(models.Model):
     )
 
     level = models.CharField(max_length=30, choices=LEVEL, verbose_name='Сложность')
-    members = models.ManyToManyField(Members, blank=True, verbose_name='Участники')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+    members = models.ManyToManyField('Members')
 
     def __str__(self):
         return self.title
@@ -48,6 +31,23 @@ class Rafting(models.Model):
         verbose_name = 'Сплав'
         verbose_name_plural = 'Сплавы'
         ordering = ['days', 'title']
+
+
+class Members(models.Model):
+    SEX = (
+        ('М', 'Муж'),
+        ('Ж', 'Жен'),
+    )
+    name = models.CharField(max_length=50, verbose_name='Фамилия, Имя')
+    sex = models.CharField(max_length=10, choices=SEX, verbose_name='Пол')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Участник'
+        verbose_name_plural = 'Участники'
+        ordering = ['name']
 
 
 class Things(models.Model):
@@ -78,22 +78,20 @@ class Images(models.Model):
         ordering = ['rafting_id']
 
 
-class RaftingMembers(models.Model):
-    rafting = models.ForeignKey(Rafting, on_delete=models.PROTECT, blank=True, verbose_name='Сплав')
-    member = models.ManyToManyField(Members, blank=True)
-
-    def __str__(self):
-        return self.rafting
-
-
-class ThingsOfRaftingMembers(models.Model):
-    member = models.ForeignKey(RaftingMembers, on_delete=models.CASCADE, verbose_name='id Участника сплава')
-    thing = models.ForeignKey(Things, on_delete=models.CASCADE, verbose_name='id Вещи')
-
 class Timings(models.Model):
     time = models.CharField(max_length=30, verbose_name='Время')
     action = models.TextField(verbose_name='Действие')
-    rafting = models.ForeignKey(Rafting, on_delete=models.PROTECT, verbose_name='Сплав')
+    DAY = (
+        ('1', 'День 1'),
+        ('2', 'День 2'),
+        ('3', 'День 3'),
+        ('4', 'День 4'),
+        ('5', 'День 5'),
+    )
+    day = models.CharField(max_length=10, choices=DAY, verbose_name='День', null=True)
+    rafting = models.ForeignKey(Rafting, on_delete=models.CASCADE, verbose_name='id сплава')
+    order = models.IntegerField(verbose_name='Порядок', null=True)
+
 
     def __str__(self):
         return self.action
@@ -102,3 +100,15 @@ class Timings(models.Model):
         verbose_name = 'Тайминг'
         verbose_name_plural = 'Тайминги'
         ordering = ['time']
+
+class ThingsOnRaftings(models.Model):
+    rafting_id = models.ForeignKey(Rafting, on_delete=models.CASCADE)
+    thing_id = models.ForeignKey(Things, on_delete=models.CASCADE)
+    member_id = models.ForeignKey(Members, on_delete=models.CASCADE, null=True)
+    is_checked = models.BooleanField()
+
+    class Meta:
+        verbose_name = 'Вещь на сплаве'
+        verbose_name_plural = 'Вещи на сплаве'
+
+

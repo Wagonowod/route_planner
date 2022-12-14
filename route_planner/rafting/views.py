@@ -26,13 +26,13 @@ def routes(request):
 def show_rafting(request, rafting_slug):
     rafting = get_object_or_404(Rafting, slug=rafting_slug)
     image = Images.objects.all().filter()
-    timings = Timings.objects.all()
+    timings = Timings.objects.order_by('order')
     context = {
         'rafting': rafting,
         'title': rafting.title,
         'content': rafting.content,
         'image': image,
-        'timing': timings,
+        'timings': timings,
     }
 
     return render(request, 'rafting/rafting.html', context)
@@ -40,10 +40,9 @@ def show_rafting(request, rafting_slug):
 
 def get_things(request):
     things = Things.objects.all()
-    members = Members.objects.all()
     context = {
-        'things': things,
-        'title': 'Сбор сплава',
-        'members': members
+        'title': 'Снаряжение',
+        'things': things
+
     }
     return render(request, 'rafting/things.html', context)
