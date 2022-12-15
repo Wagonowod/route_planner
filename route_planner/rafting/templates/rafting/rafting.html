@@ -24,12 +24,10 @@
         {% for day in days %}
         <h4>День {{ day.day }} </h4>
         {% for timing in day.timings %}
-        {% if timing.rafting.id == rafting.id %}
         <div class="row">
             <div class="col-lg-2"><p>{{ timing.time }}</p></div>
             <div class="col"><p>{{ timing.action }}</p></div>
         </div>
-        {% endif %}
         {% endfor %}
         {% endfor %}
     </div>

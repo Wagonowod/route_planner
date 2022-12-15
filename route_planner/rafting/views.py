@@ -25,7 +25,7 @@ def routes(request):
 def show_rafting(request, rafting_slug):
     rafting = get_object_or_404(Rafting, slug=rafting_slug)
     image = Images.objects.all().filter()
-    timings = Timings.objects.order_by('order')
+    timings = Timings.objects.filter(rafting_id=rafting.id)
     dayss = []
     days = []
     for time in timings:
