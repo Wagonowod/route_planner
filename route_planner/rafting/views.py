@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from .models import Rafting, Things, Images, Timings, Members
+from .models import Rafting, Things, Images, Timings
 
 
 def index(request):
@@ -27,12 +26,19 @@ def show_rafting(request, rafting_slug):
     rafting = get_object_or_404(Rafting, slug=rafting_slug)
     image = Images.objects.all().filter()
     timings = Timings.objects.order_by('order')
+    dayss = []
+    days = []
+    for time in timings:
+        dayss.append(time.day)
+    dayss = sorted(list(set(dayss)))
+    for day in dayss:
+        days.append({'day': day, 'timings': list(filter(lambda timing: (timing.day == day), timings))})
     context = {
         'rafting': rafting,
         'title': rafting.title,
         'content': rafting.content,
         'image': image,
-        'timings': timings,
+        'days': days,
     }
 
     return render(request, 'rafting/rafting.html', context)

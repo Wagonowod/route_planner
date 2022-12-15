@@ -92,7 +92,6 @@ class Timings(models.Model):
     rafting = models.ForeignKey(Rafting, on_delete=models.CASCADE, verbose_name='id сплава')
     order = models.IntegerField(verbose_name='Порядок', null=True)
 
-
     def __str__(self):
         return self.action
 
@@ -100,6 +99,7 @@ class Timings(models.Model):
         verbose_name = 'Тайминг'
         verbose_name_plural = 'Тайминги'
         ordering = ['time']
+
 
 class ThingsOnRaftings(models.Model):
     rafting_id = models.ForeignKey(Rafting, on_delete=models.CASCADE)
@@ -110,5 +110,3 @@ class ThingsOnRaftings(models.Model):
     class Meta:
         verbose_name = 'Вещь на сплаве'
         verbose_name_plural = 'Вещи на сплаве'
-
-

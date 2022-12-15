@@ -20,14 +20,17 @@
         <h2>Описание</h2>
         <p>{{ rafting.content }}</p>
         <h2>Тайминги</h2>
-        <h4>День 1</h4>
-        {% for time in timings %}
-        {% if time.day == '1' and time.rafting.id == rafting.id %}
+
+        {% for day in days %}
+        <h4>День {{ day.day }} </h4>
+        {% for timing in day.timings %}
+        {% if timing.rafting.id == rafting.id %}
         <div class="row">
-            <div class="col-lg-2"><p>{{ time.time }} </p></div>
-            <div class="col"><p>{{ time.action }}</p></div>
+            <div class="col-lg-2"><p>{{ timing.time }}</p></div>
+            <div class="col"><p>{{ timing.action }}</p></div>
         </div>
         {% endif %}
+        {% endfor %}
         {% endfor %}
     </div>
 </div>
